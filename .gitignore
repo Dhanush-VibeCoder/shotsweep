@@ -6,3 +6,4 @@ shotsweep-export-originals
 .shotsweep
 shotsweep.config.json
 *.log
+*.tgz
