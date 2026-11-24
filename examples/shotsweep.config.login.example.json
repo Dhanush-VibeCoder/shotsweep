@@ -1,0 +1,14 @@
+{
+  "url": "http://localhost:3000",
+  "project": "C:\\Projects\\my-site",
+  "login": {
+    "url": "/login",
+    "email": "${SHOTSWEEP_EMAIL}",
+    "password": "${SHOTSWEEP_PASSWORD}",
+    "successUrlNotContains": "/login"
+  },
+  "viewports": [
+    "desktop",
+    "mobile"
+  ]
+}

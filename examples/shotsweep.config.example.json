@@ -1,0 +1,20 @@
+{
+  "url": "http://localhost:3000",
+  "project": "C:\\Projects\\my-site",
+  "viewports": [
+    "desktop",
+    "mobile"
+  ],
+  "popupButtons": [
+    "Launch Creator Studio"
+  ],
+  "skipLabels": [
+    "V",
+    "Need help? Chat with us"
+  ],
+  "exclude": [
+    "/admin/*"
+  ],
+  "capturePopups": false,
+  "reuseSession": true
+}

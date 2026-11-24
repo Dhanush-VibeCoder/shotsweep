@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>shotsweep: capture every screen, review with any AI</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#f2f4f7;--surface:#fff;--soft:#e8ecf2;--text:#10131a;--muted:#5b6475;--border:#d8dee8;--accent:#2f5bff;--accent-ink:#fff;--flash:#ffd23f;--code:#10131a;--code-ink:#d6dbe6;--hot-bg:#10131a;--hot-ink:#f2f4f7;--ok:#12805c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1016;--surface:#151a23;--soft:#1c2330;--text:#e8ecf3;--muted:#98a2b3;--border:#262e3b;--accent:#6b8cff;--accent-ink:#0b1020;--code:#0a0d13;--hot-bg:#e8ecf3;--hot-ink:#0d1016;--ok:#4cc9a0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1016;--surface:#151a23;--soft:#1c2330;--text:#e8ecf3;--muted:#98a2b3;--border:#262e3b;--accent:#6b8cff;--accent-ink:#0b1020;--code:#0a0d13;--hot-bg:#e8ecf3;--hot-ink:#0d1016;--ok:#4cc9a0;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 "Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--border)}
+.bar{display:flex;align-items:center;gap:8px;height:60px}
+.sp{flex:1}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:-.02em;background:none;border:0;color:inherit;cursor:pointer;padding:0;font-family:inherit}
+.mark{width:22px;height:22px;position:relative;display:inline-block}
+.mark::before,.mark::after{content:"";position:absolute;width:9px;height:9px;border:2.5px solid var(--text)}
+.mark::before{left:0;top:0;border-right:0;border-bottom:0}.mark::after{right:0;bottom:0;border-left:0;border-top:0}
+.mark i{position:absolute;inset:7px;background:var(--flash);border-radius:50%}
+.link{background:none;border:0;color:var(--muted);font:inherit;cursor:pointer;padding:8px 10px}
+.link:hover,.link:focus-visible{color:var(--text)}
+.btn{font:inherit;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:10px 18px;border-radius:8px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.55;cursor:default}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hero{padding:64px 0 24px;display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:center}
+h1{font-size:clamp(36px,5.4vw,60px);line-height:1.04;letter-spacing:-.035em;margin:0 0 18px}
+.lead{font-size:18px;color:var(--muted);max-width:46ch;margin:0 0 26px}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.vf{position:relative;padding:22px;background:var(--surface);border:1px solid var(--border)}
+.vf i{position:absolute;width:20px;height:20px;border:3px solid var(--text)}
+.vf i:nth-child(1){left:-6px;top:-6px;border-right:0;border-bottom:0}.vf i:nth-child(2){right:-6px;top:-6px;border-left:0;border-bottom:0}
+.vf i:nth-child(3){left:-6px;bottom:-6px;border-right:0;border-top:0}.vf i:nth-child(4){right:-6px;bottom:-6px;border-left:0;border-top:0}
+.sheet{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fr{font:11px/1.3 "JetBrains Mono",ui-monospace,Consolas,monospace;color:var(--muted)}
+.fr div{aspect-ratio:16/11;background:var(--soft);border:1px solid var(--border);padding:7px;display:grid;gap:4px;align-content:start;margin-bottom:5px}
+.fr b{display:block;height:5px;background:var(--border);border-radius:2px}
+.fr b:first-child{height:9px;width:55%;background:var(--accent)}
+.fr.m div{aspect-ratio:9/14;width:62%}
+.term{background:var(--code);color:var(--code-ink);padding:18px 20px;font:13.5px/1.7 "JetBrains Mono",ui-monospace,Consolas,monospace;overflow-x:auto;margin-top:18px;white-space:pre}
+.term u{text-decoration:none;color:#5fd7a7}.term s{text-decoration:none;color:#7f8aa3}
+section{padding:56px 0}
+h2{font-size:clamp(26px,3.6vw,38px);letter-spacing:-.025em;line-height:1.1;margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 30px;max-width:56ch}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:0 44px}
+.feat div{padding:20px 0;border-top:1px solid var(--border)}
+.feat h3,.steps h3{margin:0 0 4px;font-size:18px}.feat p,.steps p{margin:0;color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.steps div{border-left:3px solid var(--accent);padding-left:16px}
+.seg{display:inline-flex;border:1px solid var(--border);padding:3px;background:var(--surface);margin-bottom:24px}
+.seg button{border:0;background:none;color:var(--muted);padding:7px 16px;font:inherit;cursor:pointer}
+.seg .on{background:var(--text);color:var(--bg)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);background:var(--surface)}
+.plan{padding:28px 24px;display:flex;flex-direction:column;gap:14px;border-right:1px solid var(--border)}
+.plan:last-child{border-right:0}
+.plan.hot{background:var(--hot-bg);color:var(--hot-ink)}
+.plan.hot .muted{color:inherit;opacity:.72}
+.plan.hot .btn{background:var(--flash);border-color:var(--flash);color:#10131a}
+.plan.cur{box-shadow:inset 0 0 0 2px var(--accent)}
+.plan h3{margin:0;font-size:20px;display:flex;gap:10px;align-items:center}
+.tag{font-size:12px;background:var(--flash);color:#10131a;padding:2px 8px;font-weight:700}
+.price{font-size:44px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.price small{font-size:14px;font-weight:400;opacity:.7;letter-spacing:0}
+.ck{list-style:none;padding:0;margin:0;display:grid;gap:8px;flex:1}
+.ck li{padding-left:22px;position:relative}.ck li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+.plan.hot .ck li::before{color:var(--flash)}
+.muted{color:var(--muted)}
+details{border-top:1px solid var(--border);padding:16px 0}details:last-of-type{border-bottom:1px solid var(--border)}
+summary{cursor:pointer;font-weight:600}details p{margin:10px 0 0;color:var(--muted);max-width:62ch}
+footer{padding:28px 0 40px;color:var(--muted);font-size:14px;border-top:1px solid var(--border)}
+.auth{max-width:400px;margin:56px auto;background:var(--surface);border:1px solid var(--border);padding:28px;display:grid;gap:14px}
+.auth h1{font-size:30px;margin:0}
+label{display:grid;gap:6px;font-weight:600;font-size:14px}
+input{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)}
+.note{font-size:13px;color:var(--muted)}
+.dash{display:grid;grid-template-columns:220px 1fr;gap:32px;padding:28px 0 56px}
+.side{display:flex;flex-direction:column;gap:4px;align-self:start;position:sticky;top:calc(80px + env(safe-area-inset-top,0px))}
+.nav{text-align:left;padding:10px 12px;border:0;background:none;color:var(--muted);font:inherit;cursor:pointer;border-left:3px solid transparent}
+.nav.on{color:var(--text);font-weight:600;border-left-color:var(--accent);background:var(--soft)}
+.who{margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:13px;word-break:break-all}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);background:var(--surface);margin:18px 0 26px}
+.stats div{padding:18px 20px;border-right:1px solid var(--border)}.stats div:last-child{border-right:0}
+.stats b{display:block;font-size:30px;letter-spacing:-.03em;line-height:1.1}
+.meter{height:8px;background:var(--soft);margin-top:10px}.meter i{display:block;height:100%;background:var(--accent)}
+.box{border:1px solid var(--border);background:var(--surface);padding:18px 20px;margin-bottom:26px}
+.key{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font:14px "JetBrains Mono",ui-monospace,Consolas,monospace}
+.key code{background:var(--soft);padding:8px 12px;overflow-wrap:anywhere}
+.scroll{overflow-x:auto;border:1px solid var(--border);background:var(--surface)}
+table{width:100%;border-collapse:collapse;min-width:480px}th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--border);font-size:14px}
+tr:last-child td{border-bottom:0}th{color:var(--muted);font-weight:600}
+h4{margin:0 0 10px;font-size:18px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--text);color:var(--bg);padding:10px 16px;z-index:50;max-width:90vw}
+.dash>main{min-width:0}
+@media (max-width:820px){.bar .link[data-scroll]{display:none}.hero,.feat,.steps,.plans,.dash,.stats{grid-template-columns:1fr}.plan{border-right:0;border-bottom:1px solid var(--border)}.stats div{border-right:0;border-bottom:1px solid var(--border)}.side{flex-direction:row;flex-wrap:wrap;position:static}.nav{border-left:0;border-bottom:3px solid transparent}.nav.on{border-bottom-color:var(--accent)}.who{width:100%}.hero{padding-top:36px}}
+@media (prefers-reduced-motion:no-preference){.toast{animation:up .18s ease-out}@keyframes up{from{opacity:0;transform:translate(-50%,8px)}}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const $=s=>document.querySelector(s);
+const PLANS=[
+ {id:"free",name:"Free",m:0,y:0,desc:"For trying shotsweep on a side project.",lim:3,ft:["The full CLI, unlimited local runs","Desktop and mobile captures","ZIP export with a manifest","3 saved exports in the cloud"]},
+ {id:"pro",name:"Pro",m:12,y:10,hot:1,desc:"For solo builders who ship often.",lim:50,ft:["Everything in Free","Login and popup recipes","Token‑optimized images","Saved presets and configs","50 saved exports"]},
+ {id:"team",name:"Team",m:29,y:24,seat:1,desc:"For teams that review UI on every pull request.",lim:"Unlimited",ft:["Everything in Pro","Capture on every pull request","Visual diff between runs","Shared history and links","Unlimited saved exports"]}
+];
+const EXPORTS=[
+ ["Creator Studio",14,"Desktop, mobile","Nov 23, 2026"],["Creator Studio",9,"Desktop","Nov 21, 2026"],["Rename Project",7,"Desktop, mobile","Nov 18, 2026"],
+ ["Landing redesign",5,"Desktop, mobile","Nov 12, 2026"],["Rename Project",6,"Desktop","Nov 9, 2026"],["Creator Studio",12,"Desktop, mobile","Nov 3, 2026"],["Pricing page",3,"Mobile","Oct 28, 2026"]
+];
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let user=store.get("shotsweep-user"),yearly=true,want=null;
+const rank=id=>PLANS.findIndex(p=>p.id===id);
+const go=h=>{location.hash=h};
+
+function head(){return `<header class="top"><div class="wrap bar"><button class="logo" data-go=""><span class="mark"><i></i></span>shotsweep</button><span class="sp"></span>${user?`<button class="btn" data-go="dashboard">Dashboard</button>`:`<button class="link" data-scroll="features">Features</button><button class="link" data-scroll="pricing">Pricing</button><button class="link" data-go="login">Log in</button><button class="btn primary" data-go="login">Get started free</button>`}</div></header>`}
+
+function planCards(mode){return `<div class="plans">${PLANS.map(p=>{
+ const price=yearly?p.y:p.m,cur=user&&user.plan===p.id;
+ const btn=mode==="dash"?(cur?`<button class="btn" disabled>Current plan</button>`:`<button class="btn" data-act="choose" data-plan="${p.id}">${rank(p.id)>rank(user.plan)?"Upgrade":"Switch"} to ${p.name}</button>`):`<button class="btn" data-act="start" data-plan="${p.id}">${p.id==="free"?"Start free":"Choose "+p.name}</button>`;
+ return `<div class="plan${p.hot?" hot":""}${cur?" cur":""}"><h3>${p.name}${p.hot?'<span class="tag">Most popular</span>':""}</h3><div class="price">$${price}<small> /month${p.seat?" per seat":""}</small></div><div class="muted">${p.desc}${yearly&&price?" Billed yearly.":""}</div><ul class="ck">${p.ft.map(f=>`<li>${f}</li>`).join("")}</ul>${btn}</div>`}).join("")}</div>`}
+const toggle=()=>`<div class="seg"><button class="${yearly?"":"on"}" data-act="bill" data-v="m">Monthly</button><button class="${yearly?"on":""}" data-act="bill" data-v="y">Yearly, save 17%</button></div>`;
+
+function landing(){
+ const frames=[["home","desktop"],["templates","desktop"],["studio","desktop"],["billing","mobile"],["settings","mobile"],["studio","mobile"]];
+ return head()+`<main class="wrap"><div class="hero"><div><h1>Capture every screen of your app. Review it with any AI.</h1><p class="lead">One command visits every page, closes the onboarding popups, logs in, and bundles labeled screenshots you can drop into ChatGPT or Claude. The capture costs zero AI credits.</p><div class="cta"><button class="btn primary" data-go="login">Get started free</button><button class="btn" data-scroll="pricing">See pricing</button></div></div>
+ <div><div class="vf"><i></i><i></i><i></i><i></i><div class="sheet">${frames.map((f,i)=>`<div class="fr${f[1]==="mobile"?" m":""}"><div><b></b><b></b><b></b><b></b></div>0${i+1}-${f[0]}-${f[1]}.png</div>`).join("")}</div></div>
+ <div class="term"><s>$</s> npx shotsweep --capture-popups\n  found /studio\n    (closed 2 popup steps)\n  <u>✓</u> 03-studio-desktop.png\nDone. 14 screenshots → shotsweep-export.zip</div></div></div>
+ <section id="features"><h2>Everything an AI reviewer needs, nothing it doesn’t</h2><p class="sub">Built for apps made with AI coding tools, where nobody has looked at every screen yet.</p><div class="feat">
+ <div><h3>Finds every route itself</h3><p>Reads your source, your sitemap, your links, and even menus that change the view without changing the URL.</p></div>
+ <div><h3>Gets past onboarding</h3><p>Clicks through popups and tours, however many steps they have, then captures the real page.</p></div>
+ <div><h3>Works behind a login</h3><p>Log in by hand once, or let shotsweep sign in with a test account. Google login and 2FA included.</p></div>
+ <div><h3>Ready for any AI</h3><p>Every export includes a manifest of routes and viewports plus a review prompt to paste in.</p></div>
+ <div><h3>Runs on your machine</h3><p>Captures stay local until you upload them yourself. Nothing is sent to us.</p></div>
+ <div><h3>Spends no credits to capture</h3><p>Plain code does the clicking. You pay tokens once, when you upload the finished batch.</p></div></div></section>
+ <section><h2>From localhost to review in three steps</h2><p class="sub">The same flow every time, so results are comparable between runs.</p><div class="steps">
+ <div><h3>1. Start your app</h3><p>Run your dev server as usual.</p></div><div><h3>2. Run shotsweep</h3><p>It discovers, captures, and zips every screen.</p></div><div><h3>3. Upload the ZIP</h3><p>Paste the review prompt and get a prioritized list of fixes.</p></div></div></section>
+ <section id="pricing"><h2>Simple pricing</h2><p class="sub">The CLI stays free. Pay when you want presets, history, and team workflows.</p>${toggle()}${planCards("land")}</section>
+ <section><h2>Questions</h2><details><summary>Does shotsweep send my screenshots anywhere?</summary><p>No. Capture runs locally with Playwright. Files leave your machine only when you upload them to an AI yourself.</p></details><details><summary>Do I need an AI subscription to capture?</summary><p>No. Capture is plain code, so it costs no AI credits. You spend tokens only when you upload the finished batch for review.</p></details><details><summary>Is it safe to use with my login?</summary><p>Use a test account on a dev site. The saved session stays in a local file you control, and shotsweep never clicks Log out.</p></details></section></main>
+ <footer><div class="wrap">shotsweep is a prototype. Sign‑in and billing on this page are simulated.</div></footer>`}
+
+function login(){return head()+`<main class="wrap"><div class="auth"><h1>Log in to shotsweep</h1><div class="note">Prototype: any email and password will work. No data is sent anywhere.</div><label>Email<input id="em" type="email" autocomplete="email" placeholder="you@example.com"></label><label>Password<input id="pw" type="password" autocomplete="current-password"></label><button class="btn primary" data-act="login">Log in</button><button class="btn" data-act="google">Continue with Google</button>${want?`<div class="note">You’ll start on the ${PLANS[rank(want)].name} plan.</div>`:""}</div></main>`}
+
+function dash(v){
+ const p=PLANS[rank(user.plan)],used=p.id==="free"?3:7,pct=typeof p.lim==="number"?Math.min(100,used/p.lim*100):8;
+ const rows=n=>EXPORTS.slice(0,Math.min(n,used)).map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("");
+ const table=n=>`<div class="scroll"><table><tr><th>Project</th><th>Screens</th><th>Viewports</th><th>Date</th></tr>${rows(n)}</table></div>`;
+ const nav=(id,l)=>`<button class="nav${v===id?" on":""}" data-go="${id}">${l}</button>`;
+ let main="";
+ if(v==="dashboard")main=`<h1 style="font-size:32px;margin:0">Welcome back</h1><div class="stats"><div><b>${used}</b>Saved exports</div><div><b>214</b>Screens captured</div><div><b>~38k</b>Tokens saved vs. agent runs</div></div>
+  <div class="box"><h4>Cloud storage on ${p.name}</h4><span class="muted">${used} of ${p.lim} saved exports used</span><div class="meter"><i style="width:${pct}%"></i></div></div>
+  <div class="box"><h4>Your license key</h4><div class="key"><code>shotsweep_live_9f3a7c21d4e8b650</code><button class="btn" data-act="copy">Copy key</button></div></div><h4>Recent exports</h4>${table(4)}`;
+ if(v==="exports")main=`<h1 style="font-size:32px;margin:0 0 18px">Exports</h1>${table(99)}`;
+ if(v==="plans")main=`<h1 style="font-size:32px;margin:0 0 6px">Plans and billing</h1><p class="sub">You’re on the <b>${p.name}</b> plan. Changes here are simulated and no payment is taken.</p>${toggle()}${planCards("dash")}`;
+ return head()+`<div class="wrap dash"><aside class="side">${nav("dashboard","Overview")}${nav("exports","Exports")}${nav("plans","Plans and billing")}<div class="who"><div class="muted">Signed in as</div>${user.email}<br><button class="link" data-act="logout" style="padding:8px 0">Log out</button></div></aside><main>${main}</main></div>`}
+
+function render(keep){
+ const r=location.hash.slice(1),prot=["dashboard","exports","plans"].includes(r),y=scrollY;
+ if(prot&&!user)return go("login");
+ if(r==="login"&&user)return go("dashboard");
+ $("#app").innerHTML=r==="login"?login():prot?dash(r):landing();
+ scrollTo(0,keep?y:0);
+}
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2400)}
+function signin(email){user={email,plan:want||"free"};want=null;store.set("shotsweep-user",user);go("dashboard")}
+
+document.addEventListener("click",e=>{
+ const el=e.target.closest("[data-go],[data-scroll],[data-act]");if(!el)return;
+ if(el.dataset.go!==undefined){if(location.hash.slice(1)===el.dataset.go)return render();return go(el.dataset.go)}
+ if(el.dataset.scroll){const t=document.getElementById(el.dataset.scroll);if(t)t.scrollIntoView({behavior:"smooth"});return}
+ const a=el.dataset.act;
+ if(a==="bill"){yearly=el.dataset.v==="y";render(true)}
+ if(a==="start"){want=el.dataset.plan;if(user){user.plan=want;store.set("shotsweep-user",user);go("dashboard")}else go("login")}
+ if(a==="login"){const em=$("#em").value.trim();if(!em.includes("@")){toast("Enter a valid email address.");return}signin(em)}
+ if(a==="google")signin("you@gmail.com");
+ if(a==="logout"){user=null;store.set("shotsweep-user",null);go("")}
+ if(a==="choose"){user.plan=el.dataset.plan;store.set("shotsweep-user",user);render(true);toast("Switched to "+PLANS[rank(user.plan)].name+". No payment taken in this demo.")}
+ if(a==="copy"){try{navigator.clipboard.writeText("shotsweep_live_9f3a7c21d4e8b650")}catch(x){}toast("License key copied.")}
+});
+addEventListener("hashchange",()=>render());
+render();
+</script>
+</body>
+</html>

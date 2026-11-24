@@ -1,0 +1,8 @@
+node_modules
+dist
+shotsweep-export
+shotsweep-export.zip
+shotsweep-export-originals
+.shotsweep
+shotsweep.config.json
+*.log

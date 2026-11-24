@@ -1,0 +1,9 @@
+{
+  "url": "http://localhost:3000",
+  "login": {
+    "url": "/#login",
+    "email": "test@example.com",
+    "password": "anything"
+  },
+  "viewports": ["desktop", "mobile"]
+}
