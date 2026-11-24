@@ -1,6 +1,6 @@
 {
   "name": "shotsweep",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Capture every screen of your web app in one command and bundle it for AI review. Finds routes, closes popups, handles login, compresses images.",
   "type": "module",
   "bin": {
@@ -19,7 +19,7 @@
     "prepublishOnly": "npm run build"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "keywords": [
     "screenshot",

@@ -8,8 +8,8 @@ import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline/promises";
 
-if (Number(process.versions.node.split(".")[0]) < 18) {
-  console.error(`shotsweep needs Node.js 18 or newer (you have ${process.versions.node}). Get it at https://nodejs.org`);
+if (Number(process.versions.node.split(".")[0]) < 20) {
+  console.error(`shotsweep needs Node.js 20 or newer (you have ${process.versions.node}). Get it at https://nodejs.org`);
   process.exit(1);
 }
 

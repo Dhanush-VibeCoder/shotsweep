@@ -26,7 +26,7 @@ shotsweep-export/
 shotsweep-export.zip            the same, zipped
 ```
 
-Requires Node.js 18 or newer.
+Requires Node.js 20 or newer.
 
 ## What it does
 
